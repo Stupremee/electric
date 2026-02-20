@@ -32,12 +32,13 @@ defmodule Electric.Replication.Eval.Env.ImplicitCasts do
   | macaddr8    | macaddr                           |                   |
   | name        | text                              |                   |
   | numeric     | numeric,float8,float4             |                   |
-  | text        | bpchar,varchar,name               |                   |
+  | text        | bpchar,varchar,name,ulid          |                   |
   | time        | interval                          |                   |
   | time        | time                              |                   |
   | timestamp   | timestamp                         |                   |
   | timestamptz | timestamptz                       |                   |
   | timetz      | timetz                            |                   |
+  | ulid        | text                              |                   |
   | varbit      | varbit,bit                        |                   |
   | varchar     | name,text,bpchar,varchar          |                   |
   """
