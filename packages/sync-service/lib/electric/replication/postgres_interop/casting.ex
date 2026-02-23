@@ -2,6 +2,7 @@ defmodule Electric.Replication.PostgresInterop.Casting do
   @int2_range -32768..32767
   @int4_range -2_147_483_648..2_147_483_647
   @int8_range -9_223_372_036_854_775_808..9_223_372_036_854_775_807
+  @ulid_regex ~r/\A[0-9A-HJKMNP-TV-Z]{26}\z/i
 
   defguard is_pg_int2(x) when is_integer(x) and x in @int2_range
   defguard is_pg_int4(x) when is_integer(x) and x in @int4_range
@@ -45,6 +46,14 @@ defmodule Electric.Replication.PostgresInterop.Casting do
   def parse_uuid(maybe_uuid) do
     {:ok, value} = Ecto.UUID.dump(maybe_uuid)
     Ecto.UUID.load!(value)
+  end
+
+  def parse_ulid(maybe_ulid) when is_binary(maybe_ulid) do
+    if Regex.match?(@ulid_regex, maybe_ulid) do
+      maybe_ulid
+    else
+      raise ArgumentError, "invalid ULID"
+    end
   end
 
   def parse_date("epoch"), do: Date.from_iso8601!("1970-01-01")

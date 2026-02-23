@@ -67,6 +67,11 @@ defmodule Electric.Replication.Eval.EnvTest do
       assert Env.const_to_pg_string(env, uuid, :uuid) == uuid
     end
 
+    test "converts ulid type as-is (noop)", %{env: env} do
+      ulid = "01ARZ3NDEKTSV4RRFFQ69G5FAV"
+      assert Env.const_to_pg_string(env, ulid, :ulid) == ulid
+    end
+
     test "converts simple arrays of integers", %{env: env} do
       result = Env.const_to_pg_string(env, [1, 2, 3], {:array, :int4})
       assert result == "ARRAY[[123]]"
@@ -106,6 +111,22 @@ defmodule Electric.Replication.Eval.EnvTest do
     test "converts numeric type", %{env: env} do
       result = Env.const_to_pg_string(env, 123.456, :numeric)
       assert String.starts_with?(result, "123.456")
+    end
+  end
+
+  describe "parse_const/3" do
+    setup do
+      env = Env.new()
+      %{env: env}
+    end
+
+    test "parses ulid values", %{env: env} do
+      ulid = "01ARZ3NDEKTSV4RRFFQ69G5FAV"
+      assert {:ok, ^ulid} = Env.parse_const(env, ulid, :ulid)
+    end
+
+    test "rejects invalid ulid values", %{env: env} do
+      assert :error = Env.parse_const(env, "not-a-valid-ulid", :ulid)
     end
   end
 end

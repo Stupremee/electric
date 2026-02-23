@@ -642,6 +642,14 @@ defmodule Electric.Replication.Eval.ParserTest do
       assert {:ok, _} = Parser.parse_and_validate_expression(~S|id = 1|, refs: %{["id"] => :int8})
     end
 
+    test "can compare ulids" do
+      refs = %{["id"] => :ulid}
+      ulid = "01ARZ3NDEKTSV4RRFFQ69G5FAV"
+
+      assert {:ok, _} = Parser.parse_and_validate_expression("id = '#{ulid}'", refs: refs)
+      assert {:ok, _} = Parser.parse_and_validate_expression("id <> '#{ulid}'", refs: refs)
+    end
+
     test "implements common array operators: @>, <@, &&, ||" do
       assert {:ok, %Expr{eval: result}} =
                Parser.parse_and_validate_expression(~S|'{1,2,3}'::int[] @> '{2,1,2}'|)
